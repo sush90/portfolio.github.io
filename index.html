@@ -1719,10 +1719,11 @@
           <p class="sr-only" id="copy-status" aria-live="polite"></p>
           </div>
  
-          <!-- Anonymous note (Netlify Forms) -->
-          <form class="note" id="note-form" name="anonymous-note" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/#contact">
-            <input type="hidden" name="form-name" value="anonymous-note">
-            <p hidden><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+          <!-- Anonymous note (FormSubmit, since GitHub Pages can't receive form posts) -->
+          <form class="note" id="note-form" name="anonymous-note" method="POST" action="https://formsubmit.co/upadhayaysushma1@gmail.com">
+            <input type="hidden" name="_subject" value="New note from your portfolio">
+            <input type="hidden" name="_template" value="table">
+            <p hidden><label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
             <div class="note-head">
               <span class="note-face" aria-hidden="true"><svg><use href="#i-catface"/></svg></span>
               <div>
@@ -1960,7 +1961,7 @@
     });
  
     /* =======================================================
-       9. Anonymous note (sent through Netlify Forms)
+       9. Anonymous note (sent through FormSubmit's AJAX endpoint)
        ======================================================= */
     const noteForm = document.getElementById('note-form');
     const noteMsg = document.getElementById('note-msg');
@@ -1978,12 +1979,13 @@
       const btnLabel = noteBtn.querySelector('.label');
       noteBtn.disabled = true; btnLabel.textContent = 'Sending…';
       try {
-        const res = await fetch('/', {
+        const res = await fetch('https://formsubmit.co/ajax/upadhayaysushma1@gmail.com', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(new FormData(noteForm)).toString()
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(noteForm)
         });
-        if (!res.ok) throw new Error(String(res.status));
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || String(res.status));
         noteForm.reset(); noteCount.textContent = '0';
         noteStatus.textContent = 'Note sent. Thank you for saying hi!';
         noteStatus.classList.add('ok');
